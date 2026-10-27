@@ -6,6 +6,7 @@ import { ResetPasswordDto } from '../mahasiswa/dto/reset-password.dto.js';
 
 @Injectable()
 export class AuthService {
+  // 1. Fungsi Login (menerima DTO dari POST)
   login(dto: LoginDto) {
     return {
       message: 'Login berhasil',
@@ -13,6 +14,7 @@ export class AuthService {
     };
   }
 
+  // 2. Fungsi Register (menerima DTO dari POST)
   register(dto: RegisterDto) {
     return {
       message: 'Registrasi berhasil',
@@ -20,6 +22,7 @@ export class AuthService {
     };
   }
 
+  // 3. Fungsi Forgot Password (menerima DTO dari GET ?email=...)
   forgotPassword(dto: ForgotPasswordDto) {
     return {
       message: 'Email reset password berhasil dikirim',
@@ -27,6 +30,15 @@ export class AuthService {
     };
   }
 
+  // 4. Fungsi Verifikasi Token (menerima parameter token dari GET /reset-password/:token)
+  verifyToken(token: string) {
+    return {
+      message: 'Token reset password valid',
+      token: token,
+    };
+  }
+
+  // 5. Fungsi Reset Password (menerima DTO dari PATCH)
   resetPassword(dto: ResetPasswordDto) {
     return {
       message: 'Password berhasil diperbarui',

@@ -1,80 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { mahasiswa } from './entities/mahasiswa-entity.js';
-import { find } from 'rxjs';
 import { CreateMhasiswaDto } from './dto/create-mahasiswa-dto.js';
 
 @Injectable()
 export class MahasiswaService {
-  private mahasiswa: mahasiswa[] = [
-    {
-      id: 1,
-      name: 'kiki',
-      author: 'f.kiki',
-      isbn: '978-890-888-5',
-      publishedYear: 2024, // <-- Tambahkan properti ini
-      isAvailable: true,
-    },
-  ];
+  
+  constructor(
+    @InjectRepository(mahasiswa)
+    private readonly mahasiswaRepository: Repository<mahasiswa>,
+  ) {}
 
-  findAll(): mahasiswa[] {
-    return this.mahasiswa;
+  async findAll(): Promise<mahasiswa[]> {
+    return this.mahasiswaRepository.find({
+      order: { createdAt: 'DESC' },
+    });
   }
 
-// Method findOne yang sudah diperbaiki
-  findOne(id: number): mahasiswa | undefined {
-    return this.mahasiswa.find((item) => item.id === id);
-  }
+  async findOne(id: string): Promise<mahasiswa> {
+    const dataMahasiswa = await this.mahasiswaRepository.findOneBy({ id });
 
-
-  create(mahasiswa: CreateMhasiswaDto): mahasiswa {
-    const newMahasiswa: mahasiswa ={
-      id: this.mahasiswa.length + 1,
-      name: mahasiswa.name,
-      author: mahasiswa.author,
-      isbn: mahasiswa.isbn,
-      publishedYear: mahasiswa.publishedYear, // <-- Tambahkan properti ini
-      isAvailable: true,
+    if (!dataMahasiswa) {
+      throw new NotFoundException('Mahasiswa tidak ditemukan');
     }
-    this.mahasiswa.push(newMahasiswa);
-    return newMahasiswa
+    return dataMahasiswa;
   }
 
-update(id: number, updateData: CreateMhasiswaDto): mahasiswa | undefined {
-  const index = this.mahasiswa.findIndex((item) => item.id === id);
-
-  if (index === -1) {
-    return undefined;
+  async create(dto: CreateMhasiswaDto): Promise<mahasiswa> {
+    const newMahasiswa = this.mahasiswaRepository.create(dto);
+    return await this.mahasiswaRepository.save(newMahasiswa);
   }
 
-  // Update data
-  this.mahasiswa[index] = {
-    ...this.mahasiswa[index],
-    ...updateData,
-  };
+  async update(id: string, dto: CreateMhasiswaDto): Promise<mahasiswa> {
+    // Pastikan data lama ada (akan throw error 404 jika tidak ada)
+    await this.findOne(id);
 
-  // KEMBALIKAN OBJEK NYA (bukan cuma angka/ID)
-  return this.mahasiswa[index]; 
-}
+    // Gabungkan data lama dengan data baru dari DTO
+    await this.mahasiswaRepository.update(id, dto);
 
-
-delete(id: number): mahasiswa | undefined {
-    // 1. Cari indeks data berdasarkan id
-    const index = this.mahasiswa.findIndex((item) => item.id === id);
-
-    // 2. Jika data tidak ditemukan, kembalikan undefined
-    if (index === -1) {
-      return undefined;
-    }
-
-    // 3. Simpan data yang akan dihapus untuk dikembalikan sebagai response
-    const deletedMahasiswa = this.mahasiswa[index];
-
-    // 4. Hapus 1 elemen pada indeks tersebut menggunakan splice
-    this.mahasiswa.splice(index, 1);
-
-    // 5. Kembalikan data yang berhasil dihapus
-    return deletedMahasiswa;
+    // Kembalikan data yang sudah di-update
+    return await this.findOne(id);
   }
 
+  async delete(id: string): Promise<{ message: string; deleteId: string }> {
+    await this.findOne(id);
 
+    await this.mahasiswaRepository.softDelete(id);
+
+    return {
+      message: 'Data berhasil dihapus',
+      deleteId: id,
+    };
+  }
 }

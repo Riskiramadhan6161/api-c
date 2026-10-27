@@ -1,0 +1,19 @@
+services:
+  # menambahkan servis postgres
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: kiki_postgres_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: supersceretepassword
+      POSTGRES_DB: harkat_store_db
+    ports:
+      # format: port komputer kalian : port container docker
+      - "5433:5432"
+    volumes:
+      - postgres_data_volume:/var/lib/postgresql/data
+
+# buat storage penyimpanan
+volumes:
+  postgres_data_volume:

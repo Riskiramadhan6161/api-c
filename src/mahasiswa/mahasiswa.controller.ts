@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { MahasiswaService } from './mahasiswa.service.js';
 import { mahasiswa } from './entities/mahasiswa-entity.js';
 import { CreateMhasiswaDto } from './dto/create-mahasiswa-dto.js';
@@ -9,38 +17,31 @@ export class MahasiswaController {
 
   // Menampilkan data
   @Get()
-  getAllmahasiswa(): mahasiswa[] {
-    // Logic untuk mengambil data dari service
+  getAllmahasiswa(): Promise<mahasiswa[]> {
     return this.mahasiswaService.findAll();
   }
 
   @Get(':id')
-  getMahasiswaById(@Param('id') id: string){
-    return this.mahasiswaService.findOne(Number(id));
+  getMahasiswaById(@Param('id') id: string) {
+    return this.mahasiswaService.findOne(id); // Langsung gunakan id (sudah string)
   }
 
-  //menyimpan data mahasiswa baru//
+  // Menyimpan data mahasiswa baru
   @Post()
-  createMahasiswa(@Body() mahasiswa: CreateMhasiswaDto) {
-    //logic untuk menyimpan data buku//
-    return this.mahasiswaService.create(mahasiswa);
-
+  createMahasiswa(@Body() mahasiswaDto: CreateMhasiswaDto) {
+    return this.mahasiswaService.create(mahasiswaDto);
   }
 
-@Put(':id')
-updateMahasiswa(
-  @Param('id') id: string,
-  @Body() mahasiswa: CreateMhasiswaDto,
-) {
-  // Panggil service dan kembalikan objeknya
-  return this.mahasiswaService.update(Number(id), mahasiswa);
-}
+  @Put(':id')
+  updateMahasiswa(
+    @Param('id') id: string,
+    @Body() mahasiswaDto: CreateMhasiswaDto,
+  ) {
+    return this.mahasiswaService.update(id, mahasiswaDto); // Hapus Number(id)
+  }
 
-  @Delete (':id')
-  deleteMahasiswa( @Param('id') id: string,
-  @Body() mahasiswa: CreateMhasiswaDto,
- ) {
-    return this.mahasiswaService.delete(Number(id));
- }
-
+  @Delete(':id')
+  deleteMahasiswa(@Param('id') id: string) {
+    return this.mahasiswaService.delete(id); // Hapus Number(id) dan @Body() yang tidak perlu
+  }
 }
