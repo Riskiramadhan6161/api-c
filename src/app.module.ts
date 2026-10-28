@@ -7,6 +7,9 @@ import { AppService } from './app.service.js';
 import { MahasiswaModule } from './mahasiswa/mahasiswa.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { mahasiswa } from './mahasiswa/entities/mahasiswa-entity.js';
+import { CategoriesController } from './categories/categories.controller.js';
+import { CategoriesService } from './categories/categories.service.js';
+import { CategoriesModule } from './categories/categories.module.js';
 
 @Module({
   imports: [
@@ -57,8 +60,10 @@ import { mahasiswa } from './mahasiswa/entities/mahasiswa-entity.js';
         synchronize: configService.get<string>('NODE_ENV') === 'development',
       }),
     }),
+
+    CategoriesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, CategoriesController],
+  providers: [AppService, CategoriesService],
 })
 export class AppModule {}
