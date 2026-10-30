@@ -4,16 +4,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import Joi from 'joi';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
-import { MahasiswaModule } from './mahasiswa/mahasiswa.module.js';
+import { BookModule } from './book/book.module.js';
 import { AuthModule } from './auth/auth.module.js';
-import { mahasiswa } from './mahasiswa/entities/mahasiswa-entity.js';
-import { CategoriesController } from './categories/categories.controller.js';
-import { CategoriesService } from './categories/categories.service.js';
 import { CategoriesModule } from './categories/categories.module.js';
+import { CustomersModule } from './customers/customers.module.js';
+import { CustomerAddressesModule } from './customer_addresses/customer_addresses.module.js';
+import { PublishersModule } from './publishers/publishers.module.js';
+import { AuthorsModule } from './authors/authors.module.js';
+import { BooksAuthorsModule } from './books_authors/books_authors.module.js';
+import { OrdersModule } from './orders/orders.module.js';
+import { OrderItemsModule } from './order_items_/order_items_.module.js';
+import { PaymentsModule } from './payments/payments.module.js';
+import { ShipmentsModule } from './shipments/shipments.module.js';
 
 @Module({
   imports: [
-    MahasiswaModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
@@ -28,7 +33,6 @@ import { CategoriesModule } from './categories/categories.module.js';
         DB_DATABASE: Joi.string().required(),
       }),
     }),
-    // TAMBAHKAN BAGIAN INI AGAR TERHUBUNG KE POSTGRESQL DOCKER
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -39,31 +43,24 @@ import { CategoriesModule } from './categories/categories.module.js';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        entities: [mahasiswa],
-        synchronize: true, // Otomatis membuat tabel di database (hanya untuk development)
-      }),
-    }),
-
-    //konfigurasi orm
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_DATABASE'),
-
         autoLoadEntities: true,
-
         synchronize: configService.get<string>('NODE_ENV') === 'development',
       }),
     }),
-
+    BookModule,
+    AuthModule,
     CategoriesModule,
+    CustomersModule,
+    CustomerAddressesModule,
+    PublishersModule,
+    AuthorsModule,
+    BooksAuthorsModule,
+    OrdersModule,
+    OrderItemsModule,
+    PaymentsModule,
+    ShipmentsModule,
   ],
-  controllers: [AppController, CategoriesController],
-  providers: [AppService, CategoriesService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

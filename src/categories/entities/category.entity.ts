@@ -1,6 +1,16 @@
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+
+@Entity('categories')
 export class Category {
-  id: string; // UUID[cite: 2]
-  name: string; // VARCHAR(100), unik[cite: 2]
-  created_at: Date; // TIMESTAMP[cite: 2]
-  updated_at: Date; // TIMESTAMP[cite: 2]
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ unique: true })
+  name: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
