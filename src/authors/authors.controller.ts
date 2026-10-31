@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { AuthorsService } from './authors.service.js';
 import { CreateAuthorDto } from './dto/create-author.dto.js';
 import { UpdateAuthorDto } from './dto/update-author.dto.js';
@@ -18,17 +18,20 @@ export class AuthorsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authorsService.findOne(+id);
+  findOne(@Param('id', ParseUUIDPipe) id: string) { // Menggunakan ParseUUIDPipe dan tanpa tanda +
+    return this.authorsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthorDto: UpdateAuthorDto) {
-    return this.authorsService.update(+id, updateAuthorDto);
+  update(
+    @Param('id', ParseUUIDPipe) id: string, // Menggunakan ParseUUIDPipe dan tanpa tanda +
+    @Body() updateAuthorDto: UpdateAuthorDto,
+  ) {
+    return this.authorsService.update(id, updateAuthorDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authorsService.remove(+id);
+  remove(@Param('id', ParseUUIDPipe) id: string) { // Menggunakan ParseUUIDPipe dan tanpa tanda +
+    return this.authorsService.remove(id);
   }
 }

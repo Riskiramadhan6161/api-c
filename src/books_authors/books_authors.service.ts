@@ -12,9 +12,13 @@ export class BooksAuthorsService {
     private readonly booksAuthorRepository: Repository<BooksAuthor>,
   ) {}
 
-  create(createBooksAuthorDto: CreateBooksAuthorDto) {
-    const booksAuthor = this.booksAuthorRepository.create(createBooksAuthorDto);
-    return this.booksAuthorRepository.save(booksAuthor);
+  async create(createBooksAuthorDto: CreateBooksAuthorDto) {
+    // Memetakan DTO secara eksplisit ke properti entity book_id dan author_id
+    const booksAuthor = this.booksAuthorRepository.create({
+      book_id: createBooksAuthorDto.book_id,
+      author_id: createBooksAuthorDto.author_id,
+    });
+    return await this.booksAuthorRepository.save(booksAuthor);
   }
 
   findAll() {
@@ -26,28 +30,29 @@ export class BooksAuthorsService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(book_id: string, author_id: string) {
     const booksAuthor = await this.booksAuthorRepository.findOne({
-      where: { id },
+      where: { book_id, author_id },
       relations: {
         book: true,
         author: true,
       },
     });
     if (!booksAuthor) {
-      throw new NotFoundException(`BooksAuthor dengan ID ${id} tidak ditemukan`);
+      throw new NotFoundException(`Relasi book_id dan author_id tersebut tidak ditemukan`);
     }
     return booksAuthor;
   }
 
-  async update(id: number, updateBooksAuthorDto: UpdateBooksAuthorDto) {
-    await this.findOne(id);
-    await this.booksAuthorRepository.update(id, updateBooksAuthorDto);
-    return this.findOne(id);
+  async update(book_id: string, author_id: string, updateBooksAuthorDto: UpdateBooksAuthorDto) {
+    const booksAuthor = await this.findOne(book_id, author_id);
+    // Menggunakan Object.assign lalu save agar aman untuk composite key
+    Object.assign(booksAuthor, updateBooksAuthorDto);
+    return await this.booksAuthorRepository.save(booksAuthor);
   }
 
-  async remove(id: number) {
-    const booksAuthor = await this.findOne(id);
-    return this.booksAuthorRepository.remove(booksAuthor);
+  async remove(book_id: string, author_id: string) {
+    const booksAuthor = await this.findOne(book_id, author_id);
+    return await this.booksAuthorRepository.remove(booksAuthor);
   }
 }

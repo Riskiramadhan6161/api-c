@@ -25,7 +25,7 @@ export class ShipmentsService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) { // Diubah dari number ke string (UUID)
     const shipment = await this.shipmentRepository.findOne({
       where: { id },
       relations: {
@@ -38,13 +38,13 @@ export class ShipmentsService {
     return shipment;
   }
 
-  async update(id: number, updateShipmentDto: UpdateShipmentDto) {
+  async update(id: string, updateShipmentDto: UpdateShipmentDto) { // Diubah dari number ke string
     await this.findOne(id);
     await this.shipmentRepository.update(id, updateShipmentDto);
     return this.findOne(id);
   }
 
-  async remove(id: number) {
+  async remove(id: string) { // Diubah dari number ke string
     const shipment = await this.findOne(id);
     return this.shipmentRepository.remove(shipment);
   }

@@ -1,33 +1,45 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  type Relation,
+} from 'typeorm';
 import { Customer } from '../../customers/entities/customer.entity.js';
 
-@Entity('customer_addresses')
+@Entity({ name: 'customer_addresses' })
 export class CustomerAddress {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
-  customerId: number;
+  @Column({ type: 'uuid' })
+  customer_id: string;
 
-  @ManyToOne(() => Customer, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'customerId' })
-  customer: Customer;
+  @ManyToOne(() => Customer, (customer) => customer.addresses, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'customer_id' })
+  customer: Relation<Customer>;
 
-  @Column()
-  street: string;
+  @Column({ type: 'varchar', length: 150 })
+  recipient_name: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 20 })
+  phone: string;
+
+  @Column({ type: 'text' })
+  address: string;
+
+  @Column({ type: 'varchar', length: 100 })
   city: string;
 
-  @Column()
-  province: string;
+  @Column({ type: 'varchar', length: 10 })
+  postal_code: string;
 
-  @Column()
-  postalCode: string;
-
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }

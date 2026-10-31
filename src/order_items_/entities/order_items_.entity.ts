@@ -1,35 +1,36 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  type Relation,
+} from 'typeorm';
 import { Order } from '../../orders/entities/order.entity.js';
-import { book } from '../../book/entities/book-entity.js';
+import { Book } from '../../book/entities/book-entity.js';
 
-@Entity('order_items')
+@Entity({ name: 'order_items' })
 export class OrderItem {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
-  orderId: number;
+  @Column({ type: 'uuid' })
+  order_id: string;
 
-  @ManyToOne(() => Order, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'orderId' })
-  order: Order;
+  @ManyToOne(() => Order, (order) => order.orderItems, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'order_id' })
+  order: Relation<Order>;
 
-  @Column()
-  bookId: number;
+  @Column({ type: 'uuid' })
+  book_id: string;
 
-  @ManyToOne(() => book, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'bookId' })
-  book: book;
+  @ManyToOne(() => Book, (book) => book.orderItems, { onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'book_id' })
+  book: Relation<Book>;
 
-  @Column()
+  @Column({ type: 'int', default: 1 })
   quantity: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  price: number; // Harga satuan saat buku dibeli
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0 })
+  price: number;
 }

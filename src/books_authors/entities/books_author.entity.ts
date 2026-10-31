@@ -1,29 +1,32 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { book } from '../../book/entities/book-entity.js';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  
+} from 'typeorm';
+import { Book } from '../../book/entities/book-entity.js';
 import { Author } from '../../authors/entities/author.entity.js';
+import type { Relation } from 'typeorm';
 
-@Entity('books_authors')
+
+@Entity({ name: 'books_authors' })
 export class BooksAuthor {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
-  bookId: number;
+  @ManyToOne(() => Book, (book) => book.bookAuthors, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'book_id' })
+  book: Relation<Book>;
 
-  @ManyToOne(() => book, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'bookId' })
-  book: book;
+  @Column({ type: 'uuid' })
+  book_id: string;
 
-  @Column()
-  authorId: number;
+  @ManyToOne(() => Author, (author) => author.bookAuthors, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'author_id' })
+  author: Relation<Author>;
 
-  @ManyToOne(() => Author, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'authorId' })
-  author: Author;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Column({ type: 'uuid' })
+  author_id: string;
 }

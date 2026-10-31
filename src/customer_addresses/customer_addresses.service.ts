@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CustomerAddress } from './entities/customer_address.entity.js';
 import { CreateCustomerAddressDto } from './dto/create-customer_address.dto.js';
 import { UpdateCustomerAddressDto } from './dto/update-customer_address.dto.js';
+
 @Injectable()
 export class CustomerAddressesService {
   constructor(
@@ -24,11 +25,11 @@ export class CustomerAddressesService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string): Promise<CustomerAddress> {
     const address = await this.addressRepository.findOne({
       where: { id },
       relations: {
-        customer: true, // Menggunakan format objek untuk TypeORM versi terbaru
+        customer: true,
       },
     });
     if (!address) {
@@ -37,13 +38,13 @@ export class CustomerAddressesService {
     return address;
   }
 
-  async update(id: number, updateCustomerAddressDto: UpdateCustomerAddressDto) {
+  async update(id: string, updateCustomerAddressDto: UpdateCustomerAddressDto) { // Diubah dari number ke string
     await this.findOne(id);
     await this.addressRepository.update(id, updateCustomerAddressDto);
     return this.findOne(id);
   }
 
-  async remove(id: number) {
+  async remove(id: string) { // Diubah dari number ke string
     const address = await this.findOne(id);
     return this.addressRepository.remove(address);
   }

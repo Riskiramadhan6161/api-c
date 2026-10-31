@@ -1,34 +1,72 @@
-import { boolean } from "joi";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
+import { Category } from '../../categories/entities/category.entity.js';
+import { Publisher } from '../../publishers/entities/publisher.entity.js';
+import { BooksAuthor } from '../../books_authors/entities/books_author.entity.js';
+import { OrderItem } from '../../order_items_/entities/order_items_.entity.js';
 
-@Entity('book')
-export class book {
+@Entity({ name: 'books' })
+export class Book {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @Column({ type: 'varchar', length: 255 })
+  title: string;
 
-    @Column({ type: 'varchar', length: 64 })
-    name: string;
+  @Column({ type: 'varchar', length: 45, unique: true })
+  isbn: string;
 
-    @Column({ type: 'varchar', length: 64 })
-    author: string;
+  @Column({ type: 'int', default: 0 })
+  publishedYear: number;
 
-    @Column({ type: 'varchar' })
-    isbn: string;
+  @Column({ type: 'boolean', default: true })
+  isAvailable: boolean;
 
-    @Column({ type: 'int' })
-    publishedYear: number;
+  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0 })
+  price: number;
 
-    @Column({ type: 'boolean', default: true })
-    isAvailable: boolean;
+  @Column({ type: 'int', default: 0 })
+  stock: number;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
+  @ManyToOne(() => Category, (category) => category.books, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
 
-    @UpdateDateColumn({ name: 'updated_at' })
-    updateAt: Date;
+  @Column({ type: 'uuid', nullable: true })
+  category_id: string;
 
-    @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-    deletedAt: Date;
-    
-} // <--- Kurung kurawal penutup kelas mahasiswa berada di paling bawah setelah semua kolom
+  @ManyToOne(() => Publisher, (publisher) => publisher.books, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'publisher_id' })
+  publisher: Publisher;
+
+  @Column({ type: 'uuid', nullable: true })
+  publisher_id: string;
+
+  @OneToMany(() => BooksAuthor, (bookAuthor) => bookAuthor.book)
+  bookAuthors: BooksAuthor[];
+
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.book)
+  orderItems: OrderItem[];
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+
+  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
+  deletedAt: Date | null;
+}

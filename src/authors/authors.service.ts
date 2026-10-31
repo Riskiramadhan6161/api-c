@@ -20,16 +20,21 @@ export class AuthorsService {
   findAll() {
     return this.authorRepository.find({
       relations: {
-        books: true,
+        // Diubah dari 'books' ke 'bookAuthors' beserta relasi ke book-nya sesuai PDF
+        bookAuthors: {
+          book: true,
+        },
       },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) { // Tipe id diubah dari number ke string (UUID)
     const author = await this.authorRepository.findOne({
       where: { id },
       relations: {
-        books: true,
+        bookAuthors: {
+          book: true,
+        },
       },
     });
     if (!author) {
@@ -38,13 +43,13 @@ export class AuthorsService {
     return author;
   }
 
-  async update(id: number, updateAuthorDto: UpdateAuthorDto) {
+  async update(id: string, updateAuthorDto: UpdateAuthorDto) { // Tipe id diubah ke string
     await this.findOne(id);
     await this.authorRepository.update(id, updateAuthorDto);
     return this.findOne(id);
   }
 
-  async remove(id: number) {
+  async remove(id: string) { // Tipe id diubah ke string
     const author = await this.findOne(id);
     return this.authorRepository.remove(author);
   }

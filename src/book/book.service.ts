@@ -1,23 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { book } from './entities/book-entity.js';
+import { Book } from './entities/book-entity.js';
 import { CreateBookDto } from './dto/create-book-dto.js';
 
 @Injectable()
 export class BookService {
   constructor(
-    @InjectRepository(book)
-    private readonly bookRepository: Repository<book>,
+    @InjectRepository(Book)
+    private readonly bookRepository: Repository<Book>,
   ) {}
 
-  async findAll(): Promise<book[]> {
+  async findAll(): Promise<Book[]> {
     return this.bookRepository.find({
       order: { createdAt: 'DESC' },
     });
   }
 
-  async findOne(id: string): Promise<book> {
+  async findOne(id: string): Promise<Book> {
     const dataBook = await this.bookRepository.findOneBy({ id });
 
     if (!dataBook) {
@@ -26,12 +26,12 @@ export class BookService {
     return dataBook;
   }
 
-  async create(dto: CreateBookDto): Promise<book> {
+  async create(dto: CreateBookDto): Promise<Book> {
     const newBook = this.bookRepository.create(dto);
     return await this.bookRepository.save(newBook);
   }
 
-  async update(id: string, dto: CreateBookDto): Promise<book> {
+  async update(id: string, dto: CreateBookDto): Promise<Book> {
     // Pastikan data lama ada (akan throw error 404 jika tidak ada)
     await this.findOne(id);
 

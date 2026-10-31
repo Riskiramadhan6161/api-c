@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { OrdersService } from './orders.service.js';
 import { CreateOrderDto } from './dto/create-order.dto.js';
 import { UpdateOrderDto } from './dto/update-order.dto.js';
@@ -17,18 +17,18 @@ export class OrdersController {
     return this.ordersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ordersService.remove(+id);
-  }
-}
+ @Get(':id')
+     findOne(@Param('id', ParseUUIDPipe) id: string) {
+       return this.ordersService.findOne(id);
+     }
+   
+     @Patch(':id')
+     update(@Param('id', ParseUUIDPipe) id: string, @Body() updateCustomerAddressDto: UpdateOrderDto) {
+       return this.ordersService.update(id, updateCustomerAddressDto);
+     }
+   
+     @Delete(':id')
+     remove(@Param('id', ParseUUIDPipe) id: string) {
+       return this.ordersService.remove(id);
+     }
+   }

@@ -1,30 +1,41 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  OneToOne,
+  JoinColumn,
+  type Relation,
+} from 'typeorm';
 import { Order } from '../../orders/entities/order.entity.js';
 
-@Entity('shipments')
+@Entity({ name: 'shipments' })
 export class Shipment {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
-  orderId: number;
+  @Column({ type: 'uuid', unique: true })
+  order_id: string;
 
-  @ManyToOne(() => Order, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'orderId' })
-  order: Order;
+  @OneToOne(() => Order, (order) => order.shipment, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'order_id' })
+  order: Relation<Order>;
 
-  @Column()
-  courier: string; // contoh: JNE, J&T, SiCepat
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  courier: string | null;
 
-  @Column({ nullable: true })
-  trackingNumber: string; // Resi pengiriman
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  tracking_number: string | null;
 
-  @Column({ default: 'processing' })
-  status: string; // contoh: processing, shipped, delivered
+  @Column({ type: 'varchar', length: 30, default: 'pending' })
+  status: string;
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamp', nullable: true })
+  shipped_at: Date | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  delivered_at: Date | null;
+
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

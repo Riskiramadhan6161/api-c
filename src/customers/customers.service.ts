@@ -21,7 +21,7 @@ export class CustomersService {
     return this.customerRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) { // Diubah dari number ke string
     const customer = await this.customerRepository.findOne({ where: { id } });
     if (!customer) {
       throw new NotFoundException(`Customer dengan ID ${id} tidak ditemukan`);
@@ -29,13 +29,13 @@ export class CustomersService {
     return customer;
   }
 
-  async update(id: number, updateCustomerDto: UpdateCustomerDto) {
+  async update(id: string, updateCustomerDto: UpdateCustomerDto) { // Diubah dari number ke string
     await this.findOne(id);
     await this.customerRepository.update(id, updateCustomerDto);
     return this.findOne(id);
   }
 
-  async remove(id: number) {
+  async remove(id: string) { // Diubah dari number ke string
     const customer = await this.findOne(id);
     return this.customerRepository.remove(customer);
   }

@@ -21,7 +21,7 @@ export class PublishersService {
     return this.publisherRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) { // Diubah dari number ke string (UUID)
     const publisher = await this.publisherRepository.findOne({ where: { id } });
     if (!publisher) {
       throw new NotFoundException(`Publisher dengan ID ${id} tidak ditemukan`);
@@ -29,13 +29,13 @@ export class PublishersService {
     return publisher;
   }
 
-  async update(id: number, updatePublisherDto: UpdatePublisherDto) {
+  async update(id: string, updatePublisherDto: UpdatePublisherDto) { // Diubah dari number ke string
     await this.findOne(id);
     await this.publisherRepository.update(id, updatePublisherDto);
     return this.findOne(id);
   }
 
-  async remove(id: number) {
+  async remove(id: string) { // Diubah dari number ke string
     const publisher = await this.findOne(id);
     return this.publisherRepository.remove(publisher);
   }

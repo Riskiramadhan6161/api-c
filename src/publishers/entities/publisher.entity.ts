@@ -1,22 +1,20 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Book } from '../../book/entities/book-entity.js';
 
-@Entity('publishers')
- export class Publisher {
-  @PrimaryGeneratedColumn()
-  id: number;
+@Entity({ name: 'publishers' })
+export class Publisher {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', length: 150 })
   name: string;
 
-  @Column({ nullable: true })
-  address: string;
+  @OneToMany(() => Book, (book) => book.publisher)
+  books: Book[];
 
-  @Column({ nullable: true })
-  phone: string;
-
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }

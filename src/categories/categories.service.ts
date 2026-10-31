@@ -12,31 +12,36 @@ export class CategoriesService {
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
-  create(createCategoryDto: CreateCategoryDto) {
+  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
     const category = this.categoryRepository.create(createCategoryDto);
-    return this.categoryRepository.save(category);
+    return await this.categoryRepository.save(category);
   }
 
-  findAll() {
-    return this.categoryRepository.find();
+  async findAll(): Promise<Category[]> {
+    return await this.categoryRepository.find({ 
+      relations: { books: true } 
+    });
   }
 
-  async findOne(id: number) {
-    const category = await this.categoryRepository.findOne({ where: { id } });
+  async findOne(id: string): Promise<Category> {
+    const category = await this.categoryRepository.findOne({
+      where: { id },
+      relations: { books: true },
+    });
     if (!category) {
-      throw new NotFoundException(`Kategori dengan ID ${id} tidak ditemukan`);
+      throw new NotFoundException(`Category with ID "${id}" not found`);
     }
     return category;
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    await this.findOne(id);
-    await this.categoryRepository.update(id, updateCategoryDto);
-    return this.findOne(id);
+  async update(id: string, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
+    const category = await this.findOne(id);
+    Object.assign(category, updateCategoryDto);
+    return await this.categoryRepository.save(category);
   }
 
-  async remove(id: number) {
+  async remove(id: string): Promise<void> {
     const category = await this.findOne(id);
-    return this.categoryRepository.remove(category);
+    await this.categoryRepository.remove(category);
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { OrderItemsService } from './order_items_.service.js';
 import { CreateOrderItemsDto } from './dto/create-order_items_.dto.js';
 import { UpdateOrderItemsDto } from './dto/update-order_items_.dto.js';
@@ -18,17 +18,20 @@ export class OrderItemsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderItemsService.findOne(+id);
+      findOne(@Param('id', ParseUUIDPipe) id: string) {
+        return this.orderItemsService.findOne(id);
+      }
+      
+    @Patch(':id')
+  update(
+    @Param('id', ParseUUIDPipe) id: string, 
+    @Body() updateOrderItemsDto: UpdateOrderItemsDto, // Sesuaikan namanya
+  ) {
+    return this.orderItemsService.update(id, updateOrderItemsDto); // Gunakan variabel kecil
   }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderItemsDto: UpdateOrderItemsDto) {
-    return this.orderItemsService.update(+id, updateOrderItemsDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderItemsService.remove(+id);
-  }
-}
+    
+      @Delete(':id')
+      remove(@Param('id', ParseUUIDPipe) id: string) {
+        return this.orderItemsService.remove(id);
+      }
+    }

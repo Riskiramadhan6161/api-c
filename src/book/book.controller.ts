@@ -8,7 +8,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { BookService } from './book.service.js';
-import { book } from './entities/book-entity.js';
+import { Book } from './entities/book-entity.js';
 import { CreateBookDto } from './dto/create-book-dto.js';
 
 @Controller('book')
@@ -17,7 +17,7 @@ export class BookController {
 
   // Menampilkan data
   @Get()
-  getAllbook(): Promise<book[]> {
+  getAllbook(): Promise<Book[]> {
     return this.bookService.findAll();
   }
 

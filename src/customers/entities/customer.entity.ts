@@ -1,22 +1,33 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from 'typeorm';
+import { CustomerAddress } from '../../customer_addresses/entities/customer_address.entity.js';
+import { Order } from '../../orders/entities/order.entity.js';
 
-@Entity('customers')
+@Entity({ name: 'customers' })
 export class Customer {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 150 })
   name: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', length: 150, unique: true })
   email: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 20 })
   phone: string;
 
-  @CreateDateColumn()
+  @OneToMany(() => CustomerAddress, (address) => address.customer)
+  addresses: CustomerAddress[];
+
+  @OneToMany(() => Order, (order) => order.customer)
+  orders: Order[];
+
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
+  deletedAt: Date | null;
 }

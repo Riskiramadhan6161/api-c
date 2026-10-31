@@ -25,7 +25,7 @@ export class PaymentsService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) { // Diubah dari number ke string (UUID)
     const payment = await this.paymentRepository.findOne({
       where: { id },
       relations: {
@@ -38,13 +38,13 @@ export class PaymentsService {
     return payment;
   }
 
-  async update(id: number, updatePaymentDto: UpdatePaymentDto) {
+  async update(id: string, updatePaymentDto: UpdatePaymentDto) { // Diubah dari number ke string
     await this.findOne(id);
     await this.paymentRepository.update(id, updatePaymentDto);
     return this.findOne(id);
   }
 
-  async remove(id: number) {
+  async remove(id: string) { // Diubah dari number ke string
     const payment = await this.findOne(id);
     return this.paymentRepository.remove(payment);
   }

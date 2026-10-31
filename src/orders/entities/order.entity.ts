@@ -1,27 +1,53 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+  type Relation,
+} from 'typeorm';
 import { Customer } from '../../customers/entities/customer.entity.js';
+import { OrderItem } from '../../order_items_/entities/order_items_.entity.js';
+import { Payment } from '../../payments/entities/payment.entity.js';
+import { Shipment } from '../../shipments/entities/shipment.entity.js';
 
-@Entity('orders')
+@Entity({ name: 'orders' })
 export class Order {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
-  customerId: number;
+  @Column({ type: 'uuid' })
+  customer_id: string;
 
-  @ManyToOne(() => Customer, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'customerId' })
-  customer: Customer;
+  @ManyToOne(() => Customer, (customer) => customer.orders, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'customer_id' })
+  customer: Relation<Customer>;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  totalAmount: number;
+  @Column({ type: 'varchar', length: 50, unique: true })
+  order_number: string;
 
-  @Column({ default: 'pending' })
-  status: string; // contoh: pending, paid, shipped, completed, cancelled
+  @Column({ type: 'varchar', length: 30, default: 'pending' })
+  status: string;
 
-  @CreateDateColumn()
+  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0 })
+  total_amount: number;
+
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order, { cascade: true })
+  orderItems: OrderItem[];
+
+  @OneToOne(() => Payment, (payment) => payment.order)
+  payment: Relation<Payment>;
+
+  @OneToOne(() => Shipment, (shipment) => shipment.order)
+  shipment: Relation<Shipment>;
+
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
